@@ -1,3 +1,5 @@
+import { HttpCodes } from '#src/enums/http.js';
+import { HttpError } from '#src/errors/HttpError.js';
 import { IConfig } from '#src/interfaces/IConfig';
 import { ILoggerFactory } from '#src/interfaces/ILogger';
 import { S3Repository } from '#src/repository/S3Repository.js';
@@ -10,8 +12,18 @@ export default function(config: IConfig, lf: ILoggerFactory) {
     const service = new S3Service(repository, lf);
     
     return async (req, res) => {
-        const stream = await service.readFile(req.params.bucket, req.params.filename);
-        stream.on('error', (error: Error) => res.end(error))
-        stream.pipe(res, { end: true });
+        try {
+            const stream = await service.readFile(req.params.bucket, req.params.filename);
+            stream.on('error', (error: Error) => res.end(error))
+            stream.pipe(res, { end: true });
+        } catch(e) {
+            if (e instanceof HttpError) {
+                res.status(e.getCode());
+                res.send(e.message);
+            } else {
+                res.status(HttpCodes.INTERNAL_ERROR);
+                res.send('Server internal error');
+            }
+        }
     }
 }
