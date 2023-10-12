@@ -2,6 +2,9 @@
 
 Proxying files from private s3 to the world
 
+`/health-check` just a app health check
+`/s3/:bucket/:filename` `:filename` to proxy from `:bucket`
+
 ## Build
 
 Just build a production image with target `final` or without it
