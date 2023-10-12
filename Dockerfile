@@ -1,4 +1,4 @@
-ARG IMAGE_VERSION=20-bullseye
+ARG IMAGE_VERSION=20-bullseye-slim
 
 FROM node:${IMAGE_VERSION} as deps
 
