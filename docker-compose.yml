@@ -24,6 +24,8 @@ services:
       - PROXY_S3_SECRET
       - PROXY_S3_BUCKET
       - PROXY_S3_REGION
+    volumes:
+      - .:/usr/app
     networks:
       - proxy-network
   s3:

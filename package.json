@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "npm run build && npm run start",
+    "dev": "tsc --watch & node --watch-path ./dist/ dist/main.js",
     "start": "node dist/main.js",
     "test": "echo \"No tests included yet\""
   },
