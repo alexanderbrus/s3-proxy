@@ -1,0 +1,57 @@
+
+version: '3'
+services:
+  proxy:
+    build:
+      context: .
+      target: ${COMPOSE_PROJECT_TARGET:-dev}
+      dockerfile: ./Dockerfile
+    restart: always
+    healthcheck:
+      test: curl --fail http://localhost:${PORT}/health-check || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    expose:
+      - ${PORT}
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - PORT
+      - PROXY_S3_ENDPOINT
+      - PROXY_S3_KEY
+      - PROXY_S3_SECRET
+      - PROXY_S3_BUCKET
+      - PROXY_S3_REGION
+    networks:
+      - proxy-network
+  s3:
+    image: minio/minio
+    restart: always
+    entrypoint: /bin/sh -c 'mkdir -p /data-1/${PROXY_S3_BUCKET:-default} && minio server --address 0.0.0.0:${PROXY_S3_WEB_PORT} --console-address :${PROXY_S3_CONSOLE_PORT} /data-1 /data-2 /data-3 /data-4'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${PROXY_S3_WEB_PORT}/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      MINIO_ROOT_USER: ${PROXY_S3_KEY}
+      MINIO_ROOT_PASSWORD: ${PROXY_S3_SECRET}
+      MINIO_SITE_NAME: s3
+    volumes:
+      - ./db_data/s3/data-1:/data-1
+      - ./db_data/s3/data-2:/data-2
+      - ./db_data/s3/data-3:/data-3
+      - ./db_data/s3/data-4:/data-4
+    expose:
+      - "${PROXY_S3_WEB_PORT}"
+      - "${PROXY_S3_CONSOLE_PORT}"
+    ports:
+      - "${PROXY_S3_WEB_PORT}:${PROXY_S3_WEB_PORT}"
+      - "${PROXY_S3_CONSOLE_PORT}:${PROXY_S3_CONSOLE_PORT}"
+    networks:
+      - proxy-network
+networks:
+  proxy-network:
+    name: proxy-network
