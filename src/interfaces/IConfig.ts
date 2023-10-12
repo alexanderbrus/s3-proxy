@@ -4,4 +4,5 @@ export interface IConfig {
     PROXY_S3_ENDPOINT: string;
     PROXY_S3_KEY: string;
     PROXY_S3_SECRET: string;
+    PROXY_S3_BUCKET: string;
 }

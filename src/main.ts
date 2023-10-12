@@ -15,6 +15,7 @@ const app = express();
 
 app.get('/health-check', HealthCheck(loggerFactory));
 
+app.get('/s3/~/:filename', S3StreamingHandler(config, loggerFactory, config.PROXY_S3_BUCKET));
 app.get('/s3/:bucket/:filename', S3StreamingHandler(config, loggerFactory));
 
 app.listen(port, () => logger.info(`Server started at port ${port}`));

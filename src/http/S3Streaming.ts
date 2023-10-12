@@ -16,24 +16,32 @@ const errorHandler = (res, e: Error) => {
     }
 }
 
-export default function(config: IConfig, lf: ILoggerFactory) {
+function s3(config: IConfig, lf: ILoggerFactory);
+function s3(config: IConfig, lf: ILoggerFactory, bucket: string);
+function s3(config: IConfig, lf: ILoggerFactory, bucket?: string) {
     const logger = lf();
     const client = new S3ClientResolver(config, lf).resolve();
     const repository = new S3Repository(client, lf);
     const service = new S3Service(repository, lf);
     
     return async (req, res) => {
+        const fileName = req.params.filename;
+        const fileBucket = bucket ?? req.params.bucket;
+
         try {
-            const stream = await service.readFile(req.params.bucket, req.params.filename);
+            const stream = await service.readFile(fileBucket, fileName);
 
             stream.on('error', (error: Error) => errorHandler(res, error));
             stream.pipe(res, { end: true });
 
-            logger.info(`Proxied file "${req.params.filename}" from bucket "${req.params.bucket}"`);
+            logger.info(`Proxied file "${fileName}" from bucket "${fileBucket}"`);
         } catch(e) {
             errorHandler(res, e);
 
-            logger.error(`Failed to proxy file "${req.params.filename}" from bucket "${req.params.bucket}"`)
+            logger.error(`Failed to proxy file "${fileName}" from bucket "${fileBucket}"`)
         }
     }
 }
+
+
+export default s3;
