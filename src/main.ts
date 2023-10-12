@@ -1,5 +1,6 @@
 import express from 'express';
 import HealthCheck from './http/HealthCheck.js';
+import NotFoundHandler from './http/NotFound.js';
 import S3StreamingHandler from './http/S3Streaming.js';
 import { ConfigResolver } from './resolvers/ConfigResolver.js';
 import { ConsoleLogger } from './services/logger/ConsoleLogger.js';
@@ -14,6 +15,8 @@ const port = config.PORT;
 const app = express();
 
 app.get('/health-check', HealthCheck(loggerFactory));
-app.get('/:filename(.*)', S3StreamingHandler(config, loggerFactory, config.PROXY_S3_BUCKET));
+app.get('/s3/:filename(*)', S3StreamingHandler(config, loggerFactory, config.PROXY_S3_BUCKET));
+app.get('/s3b/:bucket/:filename(*)', S3StreamingHandler(config, loggerFactory));
+app.get('/*', NotFoundHandler(loggerFactory));
 
 app.listen(port, () => logger.info(`Server started at port ${port}`));
