@@ -58,6 +58,7 @@ FROM deps as final
 WORKDIR /usr/app
 
 COPY --from=npm-deps /usr/app/production/node_modules ./node_modules
-COPY --from=build /usr/app/package.json /usr/app/dist/* ./
+COPY --from=build /usr/app/package.json ./
+COPY --from=build /usr/app/dist ./dist
 
 CMD ["start"]
