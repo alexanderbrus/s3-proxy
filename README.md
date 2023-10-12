@@ -2,9 +2,9 @@
 
 Proxying files from private s3 to the world
 
-`/health-check` just a app health check
-`/s3/:bucket/:filename` `:filename` to proxy from `:bucket`
-`/s3/~/:filename` `:filename` to proxy from `PROXY_S3_BUCKET`
+- `/health-check` just a app health check
+- `/s3/:bucket/:filename` `:filename` to proxy from `:bucket`
+- `/s3/~/:filename` `:filename` to proxy from `PROXY_S3_BUCKET`
 
 ## Build
 
