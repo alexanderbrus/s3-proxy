@@ -1,0 +1,27 @@
+name: Testing
+
+on:
+  - workflow_dispatch:
+  - pull_request:
+      branches: 
+        - main
+        - master
+      types: 
+        - opened
+        - synchronize 
+
+env: 
+  string: 'my string'
+
+jobs:
+  run:
+    name: testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+  steps:
+    format: 
+      run: |
+        echo $fmt
+      env: 
+        fmt: ${{ format('some multiline {0} {1}', '\n', env.string) }}
+    
